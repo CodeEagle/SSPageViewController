@@ -202,8 +202,8 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 
 		let offset = scrollView.contentOffset
 		let standarValue = _isHorizontal ? offset.x : offset.y
-		var backupPoint = _isHorizontal ? _backupView.frame.origin.x : _backupView.frame.origin.y
-		var displayPoint = _isHorizontal ? _displayView.frame.origin.x : _displayView.frame.origin.y
+		let backupPoint = _isHorizontal ? _backupView.frame.origin.x : _backupView.frame.origin.y
+		let displayPoint = _isHorizontal ? _displayView.frame.origin.x : _displayView.frame.origin.y
 		let displayLen = _isHorizontal ? _displayView.frame.size.width : _displayView.frame.size.height
 		if displayPoint - standarValue > 0 {
 			let targetBackupPoint = displayPoint - displayLen
