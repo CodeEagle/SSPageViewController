@@ -210,7 +210,6 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 			if let preId = _display.ss_previousId {
 				if _backup.ss_identifer != preId {
 					ss_delegate?.pageView(self, configureForView: _backup, beforeView: _display)
-					print(_backup.ss_identifer)
 				}
 				if backupPoint != targetBackupPoint {
 					_backupView.snp_remakeConstraints(closure: { (make) -> Void in
