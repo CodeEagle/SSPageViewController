@@ -1,0 +1,29 @@
+PODS:
+  - Alamofire (3.3.1)
+  - AlamofireImage (2.4.0):
+    - Alamofire (~> 3.3)
+  - CancelableTaskManager (0.1.0)
+  - HMSegmentedControl_CodeEagle (0.1.0)
+  - SnapKit (0.20.0)
+  - SSPageViewController (0.1.0):
+    - AlamofireImage
+    - CancelableTaskManager
+    - HMSegmentedControl_CodeEagle
+    - SnapKit
+
+DEPENDENCIES:
+  - SSPageViewController (from `../`)
+
+EXTERNAL SOURCES:
+  SSPageViewController:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  Alamofire: 369bc67b6f5ac33ded3648d7bd21c5bfb91c2ecc
+  AlamofireImage: 87408b652e0f5ae5fe364035f15aea8b9b24c77e
+  CancelableTaskManager: dbefa5712a062d1c49bc9c7e3588d85cac27e39a
+  HMSegmentedControl_CodeEagle: a81fe6c900cb4ea74be83e945c1a954a9924f679
+  SnapKit: 5fce3c1bbbf1fbd31de9aa92f33eb9fa03f15650
+  SSPageViewController: 8f6678fda96b8941a1561f36d0d1dc3a0ce1af59
+
+COCOAPODS: 0.39.0

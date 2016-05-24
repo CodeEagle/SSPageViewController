@@ -1,0 +1,6 @@
+framework module SSPageViewController {
+  umbrella header "SSPageViewController-umbrella.h"
+
+  export *
+  module * { export * }
+}
