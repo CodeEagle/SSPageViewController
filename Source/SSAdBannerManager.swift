@@ -62,7 +62,7 @@ public final class SSAdBannerManager: NSObject {
 		let canScoll = list.count > 1
 		_pageController.indicator.numberOfPages = list.count
 		_loopDisplay = canScoll
-		_pageController.loopInterval = canScoll ? (loop ? 5 : 0) : 0
+
 		_map = map
 
 		var indicatorIndex = 0
@@ -100,6 +100,7 @@ public final class SSAdBannerManager: NSObject {
 			backup.configure(item2)
 			backup.tapBlock = handler
 		}
+		_pageController.loopInterval = canScoll ? (loop ? 5 : 0) : 0
 	}
 
 	public func itemAfter(id: Int, after: Bool = false) -> (String?, Int?, Int?, Int?) {
