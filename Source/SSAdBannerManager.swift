@@ -84,8 +84,8 @@ public final class SSAdBannerManager: NSObject {
 			display.image = nil
 			display.tapBlock = nil
 			backup.tapBlock = nil
-			backup.configure((url: nil, id: nil, next: nil, previous: nil))
-			display.configure((url: nil, id: nil, next: nil, previous: nil))
+//			backup.configure((url: nil, id: nil, next: nil, previous: nil))
+//			display.configure((url: nil, id: nil, next: nil, previous: nil))
 			let handler: (Int) -> Void = { [weak self]
 				index in
 				self?.didTapBannerHandler?(index)
