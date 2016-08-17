@@ -182,6 +182,7 @@ public final class SSBannerItem: UIImageView {
 	private var nextId: String?
 	public var tapBlock: DidTapItemClosure?
 	private var _task: NSURLSessionDataTask?
+	private var _url = ""
 
 	public convenience init() {
 		self.init(frame: CGRectZero)
@@ -207,26 +208,28 @@ public final class SSBannerItem: UIImageView {
 			image = nil
 			_task?.cancel()
 			dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), { () -> Void in
-				if let url = NSURL(string: con.url ?? "") {
-					let request = NSMutableURLRequest(URL: url, cachePolicy: .UseProtocolCachePolicy, timeoutInterval: 20)
-					self._task = NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler: { (data, reps, error) in
+				guard let u = con.url else { return }
+				if self._url == u { return }
+				self._url = u
+				guard let url = NSURL(string: u) else { return }
+				let request = NSMutableURLRequest(URL: url, cachePolicy: .UseProtocolCachePolicy, timeoutInterval: 20)
+				self._task = NSURLSession.sharedSession().dataTaskWithRequest(request, completionHandler: { (data, reps, error) in
 
-						guard let data = data, img = UIImage(data: data) else { return }
-						dispatch_async(dispatch_get_main_queue(), { [weak self]() -> Void in
-							guard let sself = self else { return }
-							UIView.transitionWithView(
-								sself,
-								duration: 0.2,
-								options: .TransitionCrossDissolve,
-								animations: { [weak self] in
-									self?.image = img
-								},
-								completion: nil
-							)
-						})
+					guard let data = data, img = UIImage(data: data) else { return }
+					dispatch_async(dispatch_get_main_queue(), { [weak self]() -> Void in
+						guard let sself = self else { return }
+						UIView.transitionWithView(
+							sself,
+							duration: 0.2,
+							options: .TransitionCrossDissolve,
+							animations: { [weak self] in
+								self?.image = img
+							},
+							completion: nil
+						)
 					})
-					self._task?.resume()
-				}
+				})
+				self._task?.resume()
 			})
 
 			identifer = con.id?.string
