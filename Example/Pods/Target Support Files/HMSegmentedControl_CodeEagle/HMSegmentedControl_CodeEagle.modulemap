@@ -1,6 +1,0 @@
-framework module HMSegmentedControl_CodeEagle {
-  umbrella header "HMSegmentedControl_CodeEagle-umbrella.h"
-
-  export *
-  module * { export * }
-}

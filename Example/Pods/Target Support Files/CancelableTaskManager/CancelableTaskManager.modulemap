@@ -1,6 +1,0 @@
-framework module CancelableTaskManager {
-  umbrella header "CancelableTaskManager-umbrella.h"
-
-  export *
-  module * { export * }
-}
