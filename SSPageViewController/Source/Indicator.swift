@@ -35,9 +35,19 @@ public final class PageIndicator: UIView {
         _indicatorBackup.speed = 999
         indicator.backgroundColor = indicatorTintColor.cgColor
         _indicatorBackup.backgroundColor = indicatorTintColor.cgColor
-        frame = CGRect(origin: CGPoint.zero, size: CGSize(width: UIScreen.main.bounds.width, height: 3))
+        frame = CGRect(origin: CGPoint.zero, size: CGSize(width: UIScreen.main.bounds.width, height: 2))
         indicator.frame = CGRect(x: 0, y: 0, width: 0, height: frame.height)
         _indicatorBackup.frame = CGRect(x: 0, y: 0, width: 0, height: frame.height)
+    }
+    
+    public override func layoutSubviews() {
+        super.layoutSubviews()
+        var f = indicator.frame
+        f.size.height = frame.height
+        indicator.frame = f
+        f = _indicatorBackup.frame
+        f.size.height = frame.height
+        _indicatorBackup.frame = f
     }
     
     private func updateIndicator() {
