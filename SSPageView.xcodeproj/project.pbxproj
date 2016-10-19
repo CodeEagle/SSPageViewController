@@ -20,6 +20,7 @@
 		16A717281DB613E800AA3101 /* SSPageViewController.h in Headers */ = {isa = PBXBuildFile; fileRef = 16A717261DB613E800AA3101 /* SSPageViewController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		16A717341DB6140000AA3101 /* SSAdBannerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16A717321DB6140000AA3101 /* SSAdBannerManager.swift */; };
 		16A717351DB6140000AA3101 /* SSPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16A717331DB6140000AA3101 /* SSPageViewController.swift */; };
+		16C746921DB72C7500FB7B79 /* Indicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16C746911DB72C7500FB7B79 /* Indicator.swift */; };
 		16D5887C1DB614520046E331 /* HMSegmentedControl_CodeEagle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16D5887A1DB614520046E331 /* HMSegmentedControl_CodeEagle.framework */; };
 		16D5887D1DB614520046E331 /* SnapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16D5887B1DB614520046E331 /* SnapKit.framework */; };
 /* End PBXBuildFile section */
@@ -62,6 +63,7 @@
 		16A717271DB613E800AA3101 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		16A717321DB6140000AA3101 /* SSAdBannerManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSAdBannerManager.swift; sourceTree = "<group>"; };
 		16A717331DB6140000AA3101 /* SSPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSPageViewController.swift; sourceTree = "<group>"; };
+		16C746911DB72C7500FB7B79 /* Indicator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Indicator.swift; sourceTree = "<group>"; };
 		16D5887A1DB614520046E331 /* HMSegmentedControl_CodeEagle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HMSegmentedControl_CodeEagle.framework; path = Carthage/Build/iOS/HMSegmentedControl_CodeEagle.framework; sourceTree = "<group>"; };
 		16D5887B1DB614520046E331 /* SnapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SnapKit.framework; path = Carthage/Build/iOS/SnapKit.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -118,6 +120,7 @@
 			children = (
 				16A717321DB6140000AA3101 /* SSAdBannerManager.swift */,
 				16A717331DB6140000AA3101 /* SSPageViewController.swift */,
+				16C746911DB72C7500FB7B79 /* Indicator.swift */,
 			);
 			path = Source;
 			sourceTree = "<group>";
@@ -298,6 +301,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				16A717341DB6140000AA3101 /* SSAdBannerManager.swift in Sources */,
+				16C746921DB72C7500FB7B79 /* Indicator.swift in Sources */,
 				16A717351DB6140000AA3101 /* SSPageViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

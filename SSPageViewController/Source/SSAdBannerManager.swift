@@ -15,6 +15,13 @@ public final class SSAdBannerManager: NSObject {
 	// MARK:- Public
 	public var didShowBannerHandler: ((Int) -> Void)?
 	public var didTapBannerHandler: ((Int) -> Void)?
+    public var indicatorLocationPercantage: ((Float) -> ())? {
+        didSet {
+            if indicatorLocationPercantage != nil {
+                _pageController.showsIndicator = false
+            }
+        }
+    }
 	public var backgroundColor: UIColor? {
 		didSet {
 			_pageController.view.backgroundColor = backgroundColor
@@ -40,10 +47,10 @@ public final class SSAdBannerManager: NSObject {
 	fileprivate lazy var _map: [Int: String] = [:]
     fileprivate lazy var _indexCache: [Int : Int] = [:]
 	fileprivate lazy var _hash = 0
+    fileprivate var _index = 0
+    
 
-	deinit {
-		_pageController.ss_delegate = nil
-	}
+	deinit { _pageController.ss_delegate = nil }
 
 	public override init() {
 		super.init()
@@ -51,31 +58,48 @@ public final class SSAdBannerManager: NSObject {
 		_pageController.indicatorAlignStyle = .center
 		_pageController.ss_delegate = self
 		_pageController.showsIndicator = true
+        _pageController.currentOffset = {[weak self] offset in self?.deal(scroll: offset) }
 	}
 
+    fileprivate func deal(scroll offset: CGFloat) {
+        
+        let length = _pageController.itemLength
+        let total =  length * CGFloat(_map.count)
+        let realOffset = offset - length
+        let current = CGFloat(_index) * length + realOffset
+        if realOffset >= length {
+            if _index == _pageController.indicator.currentPage {
+                _index = _pageController.indicator.currentPage + 1
+                if _index >= _map.count { _index = 0 }
+            }
+        } else if realOffset <= -length {
+            if _index == _pageController.indicator.currentPage {
+                _index = _pageController.indicator.currentPage - 1
+                if _index < 0 { _index = _map.count - 1 }
+            }
+        }
+        let percentage = current / total
+        indicatorLocationPercantage?(Float(percentage))
+    }
+    
 	public func reset(_ list: [String], loop: Bool = false) {
 		var map = [Int: String]()
-		for (index, item) in list.enumerated() {
-			map[index] = item
-		}
+		for (index, item) in list.enumerated() { map[index] = item }
 		let canScoll = list.count > 1
 		_pageController.indicator.numberOfPages = list.count
 		_loopDisplay = canScoll
-
 		_map = map
 
 		var indicatorIndex = 0
 		if list.count > 1 {
 			let total = list.joined(separator: ",")
 			_hash = total.hash
-			if let _index = _indexCache[_hash] {
-				indicatorIndex = _index
-			} else {
-				_indexCache[_hash] = 0
-			}
+			if let _index = _indexCache[_hash] { indicatorIndex = _index }
+            else { _indexCache[_hash] = 0 }
 		}
-
 		_pageController.indicator.currentPage = indicatorIndex
+//        _offset = CGFloat(indicatorIndex) * _pageController.itemLength
+        deal(scroll: _pageController.itemLength)
 		_pageController.configurationBlock = { [weak self]
 			(display, backup) -> Void in
 			guard let sself = self else { return }
@@ -83,8 +107,6 @@ public final class SSAdBannerManager: NSObject {
 			display.image = nil
 			display.tapBlock = nil
 			backup.tapBlock = nil
-//			backup.configure((url: nil, id: nil, next: nil, previous: nil))
-//			display.configure((url: nil, id: nil, next: nil, previous: nil))
 			let handler: (Int) -> Void = { [weak self]
 				index in
 				self?.didTapBannerHandler?(index)
@@ -110,42 +132,19 @@ public final class SSAdBannerManager: NSObject {
 		if count == 1 { return (_map[0], 0, nil, nil) }
 		var now: Int?
 		if after {
-			if id >= count - 1 {
-				if _loopDisplay {
-					now = 0
-				}
-			} else {
-				now = id + 1
-			}
+			if id >= count - 1 { if _loopDisplay { now = 0 } }
+            else { now = id + 1 }
 		} else {
-			if id == 0 {
-				if _loopDisplay {
-					now = count - 1
-				}
-			} else {
-				now = id - 1
-			}
+			if id == 0 { if _loopDisplay { now = count - 1 } }
+            else { now = id - 1 }
 		}
 		guard let nowId = now else { return (nil, now, nextId, previousId) }
-
 		let value = _map[nowId]
-
 		if count == 1 { return (value, now, nextId, previousId) }
-
-		if nowId >= count - 1 {
-			if _loopDisplay {
-				nextId = 0
-			}
-		} else {
-			nextId = nowId + 1
-		}
-		if nowId == 0 {
-			if _loopDisplay {
-				previousId = count - 1
-			}
-		} else {
-			previousId = nowId - 1
-		}
+		if nowId >= count - 1 { if _loopDisplay { nextId = 0 } }
+        else { nextId = nowId + 1 }
+		if nowId == 0 { if _loopDisplay { previousId = count - 1 } }
+        else { previousId = nowId - 1 }
 		return (value, nowId, nextId, previousId)
 	}
 }
@@ -165,9 +164,9 @@ extension SSAdBannerManager: SSPageViewDelegate {
 	public func pageView(_ pageView: SSPageViewController<Template, SSAdBannerManager>, didScrollToView view: Template) {
 		guard let value = Int(view.ss_identifer) else { return }
 		_pageController.indicator.currentPage = value
-		if _map.count > 1 {
-			_indexCache[_hash] = value
-		}
+        _index = value
+        deal(scroll: _pageController.itemLength)
+		if _map.count > 1 { _indexCache[_hash] = value }
 		didShowBannerHandler?(value)
 	}
 }
@@ -220,9 +219,7 @@ public final class SSBannerItem: UIImageView {
 							with: sself,
 							duration: 0.2,
 							options: .transitionCrossDissolve,
-							animations: { [weak self] in
-								self?.image = img
-							},
+							animations: { [weak self] in self?.image = img },
 							completion: nil
 						)
 					})

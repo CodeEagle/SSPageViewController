@@ -75,14 +75,25 @@ private class ImageLoopCell: UITableViewCell {
 	static let idf = "cell"
 
 	private var manager: SSAdBannerManager!
+    private let indicator = PageIndicator(frame: CGRect.zero)
 
 	override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
 		super.init(style: .default, reuseIdentifier: ImageLoopCell.idf)
 		manager = SSAdBannerManager()
 		contentView.addSubview(manager.view)
+        manager.indicatorLocationPercantage = {[weak self]
+            p in
+            self?.indicator.locationPercentage = p
+        }
+        indicator.indicatorTintColor = UIColor.orange
+        manager.view.addSubview(indicator)
 		manager.view.snp.makeConstraints { (make) -> Void in
 			make.top.left.bottom.right.equalTo(contentView)
 		}
+        indicator.snp.makeConstraints { (make) in
+            make.left.right.bottom.equalToSuperview()
+            make.height.equalTo(2)
+        }
 	}
 
 	required init?(coder aDecoder: NSCoder) {
@@ -90,6 +101,7 @@ private class ImageLoopCell: UITableViewCell {
 	}
 
 	func configure(list: [String], scroll: Bool = true) {
+        indicator.totalPage = UInt(list.count)
 		manager.reset(list, loop: scroll)
 	}
 }

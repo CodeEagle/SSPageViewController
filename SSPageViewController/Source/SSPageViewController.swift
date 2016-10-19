@@ -10,7 +10,6 @@ import UIKit
 #if !PACKING_FOR_APPSTORE
     import HMSegmentedControl_CodeEagle
     import SnapKit
-
 #endif
 
 //MARK:- SSPageViewController
@@ -23,7 +22,11 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 	public fileprivate(set) lazy var indicator: UIPageControl = UIPageControl()
 	public fileprivate(set) lazy var scrollView = UIScrollView()
 	public fileprivate(set) lazy var segment: HMSegmentedControl_CodeEagle = HMSegmentedControl_CodeEagle()
-
+    public var itemLength: CGFloat {
+        let size = view.bounds.size
+        return _isHorizontal ? size.width : size.height
+    }
+    
 	public weak var ss_delegate: Delegate?
 
 	public var initializeTemplateConfiguration: TemplateConfigurationClosure? {
@@ -60,11 +63,11 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 		}
 	}
 
-	public var showsIndicator: Bool = false {
-		didSet {
-			indicator.isHidden = !showsIndicator
-		}
-	}
+    public var showsIndicator: Bool = false {
+        didSet { indicator.isHidden = !showsIndicator }
+    }
+    
+    public var currentOffset: ((CGFloat) -> ())?
 
 	// MARK:- Private
 	fileprivate var _display: Template!
@@ -201,10 +204,10 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 	fileprivate func dealScroll(_ scrollView: UIScrollView) {
 		CancelableTaskManager.cancel(_task)
 		CancelableTaskManager.cancel(_scrollTask)
+        let offset = scrollView.contentOffset
+        let standarValue = _isHorizontal ? offset.x : offset.y
+        currentOffset?(standarValue)
 		if _ignoreScroll { return }
-
-		let offset = scrollView.contentOffset
-		let standarValue = _isHorizontal ? offset.x : offset.y
 		let backupPoint = _isHorizontal ? _backupView.frame.origin.x : _backupView.frame.origin.y
 		let displayPoint = _isHorizontal ? _displayView.frame.origin.x : _displayView.frame.origin.y
 		let displayLen = _isHorizontal ? _displayView.frame.size.width : _displayView.frame.size.height
@@ -344,10 +347,8 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 			}
 			make.width.height.equalTo(scrollView)
 		})
-
 		scrollView.setNeedsLayout()
 		ss_delegate?.pageView(self, didScrollToView: _display)
-
 		addDisplayNextTask()
 	}
 }
@@ -426,11 +427,8 @@ private extension SSPageViewController {
 		case .right: _isHorizontal ? (inset.right = 10) : (inset.bottom = 10)
 		default: break
 		}
-		if _isHorizontal {
-			inset.bottom = 10
-		} else {
-			inset.right = 10
-		}
+		if _isHorizontal { inset.bottom = 10 }
+        else { inset.right = 10 }
 
 		indicator.snp.removeConstraints()
 		indicator.snp.makeConstraints { (make) -> Void in
@@ -457,7 +455,9 @@ private extension SSPageViewController {
 
 	func customConfigurationDone() {
 		let hideAndStall = !(_display.ss_nextId == nil && _display.ss_previousId == nil)
-		showsIndicator = hideAndStall
+        if showsIndicator {
+            indicator.isHidden = hideAndStall
+        }
 		scrollView.isScrollEnabled = hideAndStall
 
 		_displayView.snp.removeConstraints()
