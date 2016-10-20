@@ -74,8 +74,8 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 	fileprivate var _backup: Template!
 
 	fileprivate var _direction: UIPageViewControllerNavigationOrientation!
-	fileprivate var _task: CancelableTask?
-	fileprivate var _scrollTask: CancelableTask?
+	fileprivate var _task: SSCancelableTask?
+	fileprivate var _scrollTask: SSCancelableTask?
 
 	fileprivate var _isHorizontal: Bool { return _direction == .horizontal }
 	fileprivate var _displayView: UIView! { return _display.ss_content }
@@ -202,8 +202,8 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 	}
 
 	fileprivate func dealScroll(_ scrollView: UIScrollView) {
-		CancelableTaskManager.cancel(_task)
-		CancelableTaskManager.cancel(_scrollTask)
+		SSCancelableTaskManager.cancel(_task)
+		SSCancelableTaskManager.cancel(_scrollTask)
         let offset = scrollView.contentOffset
         let standarValue = _isHorizontal ? offset.x : offset.y
         currentOffset?(standarValue)
@@ -498,9 +498,9 @@ private extension SSPageViewController {
 	}
 
 	func addDisplayNextTask() {
-		CancelableTaskManager.cancel(_task)
+		SSCancelableTaskManager.cancel(_task)
 		if loopInterval == 0 || (_display.ss_nextId == nil && _display.ss_previousId == nil) { return }
-		_task = CancelableTaskManager.delay(loopInterval, work: { [weak self]() -> Void in
+		_task = SSCancelableTaskManager.delay(loopInterval, work: { [weak self]() -> Void in
 			guard let sself = self else { return }
 			let x = sself._isHorizontal ? sself.scrollView.contentOffset.x + sself._boundsWidth: 0
 			let y = sself._isHorizontal ? 0 : sself.scrollView.contentOffset.y + sself._boundsHeight
@@ -542,34 +542,29 @@ private extension NSRange {
 }
 
 //MARK:- CancelableTaskManager
-typealias CancelableTask = (_ cancel: Bool) -> Void
+typealias SSCancelableTask = (_ cancel: Bool) -> Void
 
-struct CancelableTaskManager {
+struct SSCancelableTaskManager {
 
-	static func delay(_ time: TimeInterval, work: @escaping ()->()) -> CancelableTask? {
+	static func delay(_ time: TimeInterval, work: @escaping ()->()) -> SSCancelableTask? {
 
-		var finalTask: CancelableTask?
+		var finalTask: SSCancelableTask?
 
-		let cancelableTask: CancelableTask = { cancel in
+		let cancelableTask: SSCancelableTask = { cancel in
 			if cancel {
 				finalTask = nil // key
 			} else {
 				DispatchQueue.main.async(execute: work)
 			}
 		}
-
 		finalTask = cancelableTask
-
-		DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + Double(Int64(time * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC)) {
-			if let task = finalTask {
-				task(false)
-			}
+		DispatchQueue.main.asyncAfter(deadline: .now() + time ) {
+			if let task = finalTask { task(false) }
 		}
-
 		return finalTask
 	}
 
-	static func cancel(_ cancelableTask: CancelableTask?) {
+	static func cancel(_ cancelableTask: SSCancelableTask?) {
 		cancelableTask?(true)
 	}
 }

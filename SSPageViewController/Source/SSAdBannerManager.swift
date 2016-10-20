@@ -98,13 +98,10 @@ public final class SSAdBannerManager: NSObject {
             else { _indexCache[_hash] = 0 }
 		}
 		_pageController.indicator.currentPage = indicatorIndex
-//        _offset = CGFloat(indicatorIndex) * _pageController.itemLength
         deal(scroll: _pageController.itemLength)
 		_pageController.configurationBlock = { [weak self]
 			(display, backup) -> Void in
 			guard let sself = self else { return }
-			backup.image = nil
-			display.image = nil
 			display.tapBlock = nil
 			backup.tapBlock = nil
 			let handler: (Int) -> Void = { [weak self]
@@ -203,11 +200,11 @@ public final class SSBannerItem: UIImageView {
 	public func configure(_ con: (url: String?, id: Int?, next: Int?, previous: Int?)) {
 
 		autoreleasepool { () -> () in
-			image = nil
 			_task?.cancel()
             DispatchQueue.global().async {
 				guard let u = con.url else { return }
 				if self._url == u { return }
+                DispatchQueue.main.async { self.image = nil }
 				self._url = u
 				guard let url = URL(string: u) else { return }
 				let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 20)

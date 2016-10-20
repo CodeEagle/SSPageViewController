@@ -42,6 +42,7 @@ final class ImageLooperViewController: UIViewController {
 		}
 		automaticallyAdjustsScrollViewInsets = false
 		// Do any additional setup after loading the view.
+        
 	}
 
 	override func didReceiveMemoryWarning() {
@@ -66,8 +67,14 @@ extension ImageLooperViewController: UITableViewDataSource, UITableViewDelegate 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: ImageLoopCell.idf) as? ImageLoopCell
 		cell?.configure(list: images[indexPath.row])
+        let time = DispatchTime.now() + .seconds(2)
+        DispatchQueue.main.asyncAfter(deadline: time, execute: {
+            cell?.configure(list: self.images[indexPath.row])
+        })
 		return cell!
 	}
+    
+    
 }
 
 private class ImageLoopCell: UITableViewCell {
