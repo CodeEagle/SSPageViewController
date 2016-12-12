@@ -224,9 +224,9 @@ public final class SSBannerItem: UIImageView {
 				self._task?.resume()
 			}
 
-			identifer = con.id?.string
-			nextId = con.next?.string
-			previousId = con.previous?.string
+			identifer = con.id?.ss_string
+			nextId = con.next?.ss_string
+			previousId = con.previous?.ss_string
 		}
 	}
 
@@ -246,7 +246,7 @@ extension SSBannerItem: SSPageViewContentProtocol {
 }
 
 extension Int {
-	var string: String { return "\(self)" }
+	var ss_string: String { return "\(self)" }
 }
 
 protocol StringConvertible {
