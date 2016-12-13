@@ -1,2 +1,2 @@
-github "CodeEagle/HMSegmentedControl_CodeEagle"
-github "SnapKit/SnapKit"
+git "git@github.com:CodeEagle/HMSegmentedControl_CodeEagle.git"
+git "git@github.com:SnapKit/SnapKit.git"
