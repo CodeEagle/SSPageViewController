@@ -455,9 +455,7 @@ private extension SSPageViewController {
 
 	func customConfigurationDone() {
 		let hideAndStall = !(_display.ss_nextId == nil && _display.ss_previousId == nil)
-        if showsIndicator {
-            indicator.isHidden = hideAndStall
-        }
+        if showsIndicator { indicator.isHidden = hideAndStall }
 		scrollView.isScrollEnabled = hideAndStall
 
 		_displayView.snp.removeConstraints()

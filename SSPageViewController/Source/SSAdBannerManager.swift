@@ -109,7 +109,6 @@ public final class SSAdBannerManager: NSObject {
 				self?.didTapBannerHandler?(index)
 			}
 			if list.count <= indicatorIndex { return }
-
 			let item = sself.itemAfter(indicatorIndex + 1)
 			display.configure(item)
 			display.tapBlock = handler
@@ -198,36 +197,40 @@ public final class SSBannerItem: UIImageView {
 	}
 
 	public func configure(_ con: (url: String?, id: Int?, next: Int?, previous: Int?)) {
-
-		autoreleasepool { () -> () in
-			_task?.cancel()
-            DispatchQueue.global().async {
-				guard let u = con.url else { return }
-				if self._url == u { return }
-                DispatchQueue.main.async { self.image = nil }
-				self._url = u
-				guard let url = URL(string: u) else { return }
-				let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 20)
-				self._task = URLSession.shared.dataTask(with: request, completionHandler: { (data, reps, error) in
-					guard let data = data, let img = UIImage(data: data) else { return }
-					DispatchQueue.main.async(execute: { [weak self]() -> Void in
-						guard let sself = self else { return }
-						UIView.transition(
-							with: sself,
-							duration: 0.2,
-							options: .transitionCrossDissolve,
-							animations: { [weak self] in self?.image = img },
-							completion: nil
-						)
-					})
-				})
-				self._task?.resume()
-			}
-
-			identifer = con.id?.ss_string
-			nextId = con.next?.ss_string
-			previousId = con.previous?.ss_string
-		}
+        _task?.cancel()
+        guard let u = con.url else { return }
+        if _url == u && image != nil { return }
+        image = nil
+        DispatchQueue.global(qos: .userInitiated).async {
+            self._url = u
+            guard let url = URL(string: u) else { return }
+            let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 20)
+            if let data = URLCache.shared.cachedResponse(for: request)?.data, let img = UIImage(data: data) {
+                DispatchQueue.main.async { self.image = img }
+                return
+            }
+            self._task = URLSession.shared.dataTask(with: request, completionHandler: { (data, reps, error) in
+                guard let data = data, let img = UIImage(data: data) else { return }
+                if let hr = reps as? HTTPURLResponse {
+                    let cap = CachedURLResponse(response: hr, data: data)
+                    URLCache.shared.storeCachedResponse(cap, for: request)
+                }
+                DispatchQueue.main.async(execute: { [weak self]() -> Void in
+                    guard let sself = self else { return }
+                    UIView.transition(
+                        with: sself,
+                        duration: 0.1,
+                        options: .transitionCrossDissolve,
+                        animations: { [weak self] in self?.image = img },
+                        completion: nil
+                    )
+                })
+            })
+            self._task?.resume()
+        }
+        identifer = con.id?.ss_string
+        nextId = con.next?.ss_string
+        previousId = con.previous?.ss_string
 	}
 
 	@objc fileprivate func tap() {
