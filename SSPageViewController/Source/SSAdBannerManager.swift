@@ -54,6 +54,14 @@ public final class SSAdBannerManager: NSObject {
                 guard let sself = self else { return }
                 display.placeHolderImage = sself.placeHolderImage
                 backup.placeHolderImage = sself.placeHolderImage
+                if display.image == nil {
+                    display.image = display.placeHolderImage
+                    display.contentMode = display.placeHolderMode
+                }
+                if backup.image == nil {
+                    backup.image = backup.placeHolderImage
+                    display.contentMode = display.placeHolderMode
+                }
             }
         }
     }
@@ -64,6 +72,12 @@ public final class SSAdBannerManager: NSObject {
                 guard let sself = self else { return }
                 display.placeHolderMode = sself.placeHolderMode
                 backup.placeHolderMode = sself.placeHolderMode
+                if display.image == display.placeHolderImage {
+                    display.contentMode = display.placeHolderMode
+                }
+                if backup.image == backup.placeHolderImage {
+                    backup.contentMode = backup.placeHolderMode
+                }
             }
         }
     }
