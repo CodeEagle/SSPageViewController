@@ -243,7 +243,7 @@ public final class SSBannerItem: UIImageView {
 	public func configure(_ con: (url: String?, id: Int?, next: Int?, previous: Int?)) {
         _task?.cancel()
         guard let u = con.url else { return }
-        if _url == u && image != nil { return }
+        if _url == u && image != nil && image != placeHolderImage { return }
         image = placeHolderImage
         contentMode = placeHolderMode
         DispatchQueue.global(qos: .userInitiated).async {
