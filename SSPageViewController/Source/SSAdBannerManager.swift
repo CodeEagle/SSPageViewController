@@ -26,6 +26,12 @@ public final class SSAdBannerManager: NSObject {
 		didSet {
 			_pageController.view.backgroundColor = backgroundColor
 			_pageController.scrollView.backgroundColor = backgroundColor
+            _pageController.initializeTemplateConfiguration = {
+                [weak self](display, backup) in
+                guard let sself = self else { return }
+                display.layer.backgroundColor = sself.backgroundColor?.cgColor
+                backup.layer.backgroundColor = sself.backgroundColor?.cgColor
+            }
 		}
 	}
 	public var view: UIView { return _pageController.view }
@@ -35,11 +41,32 @@ public final class SSAdBannerManager: NSObject {
 			_pageController.initializeTemplateConfiguration = {
 				[weak self](display, backup) in
 				guard let sself = self else { return }
-				display.contentMode = sself.imageContentMode
-				backup.contentMode = sself.imageContentMode
+				display.imageContentMode = sself.imageContentMode
+				backup.imageContentMode = sself.imageContentMode
 			}
 		}
 	}
+    
+    public var placeHolderImage: UIImage? {
+        didSet {
+            _pageController.initializeTemplateConfiguration = {
+                [weak self](display, backup) in
+                guard let sself = self else { return }
+                display.placeHolderImage = sself.placeHolderImage
+                backup.placeHolderImage = sself.placeHolderImage
+            }
+        }
+    }
+    public var placeHolderMode: UIViewContentMode = .scaleAspectFit {
+        didSet {
+            _pageController.initializeTemplateConfiguration = {
+                [weak self](display, backup) in
+                guard let sself = self else { return }
+                display.placeHolderMode = sself.placeHolderMode
+                backup.placeHolderMode = sself.placeHolderMode
+            }
+        }
+    }
 
 	// MARK:- Private
 	fileprivate lazy var _pageController: SSPageViewController<SSAdBannerManager.Template, SSAdBannerManager> = SSPageViewController(scrollDirection: .horizontal)
@@ -177,7 +204,10 @@ public final class SSBannerItem: UIImageView {
 	public var tapBlock: DidTapItemClosure?
 	fileprivate var _task: URLSessionDataTask?
 	fileprivate var _url = ""
-
+    fileprivate var placeHolderImage: UIImage?
+    fileprivate var placeHolderMode: UIViewContentMode = .scaleAspectFit
+    fileprivate var imageContentMode: UIViewContentMode = .scaleAspectFit
+    
 	public convenience init() {
 		self.init(frame: CGRect.zero)
 		layer.backgroundColor = UIColor.lightGray.cgColor
@@ -200,13 +230,17 @@ public final class SSBannerItem: UIImageView {
         _task?.cancel()
         guard let u = con.url else { return }
         if _url == u && image != nil { return }
-        image = nil
+        image = placeHolderImage
+        contentMode = placeHolderMode
         DispatchQueue.global(qos: .userInitiated).async {
             self._url = u
             guard let url = URL(string: u) else { return }
             let request = URLRequest(url: url, cachePolicy: .useProtocolCachePolicy, timeoutInterval: 20)
             if let data = URLCache.shared.cachedResponse(for: request)?.data, let img = UIImage(data: data) {
-                DispatchQueue.main.async { self.image = img }
+                DispatchQueue.main.async {
+                    self.contentMode = self.imageContentMode
+                    self.image = img
+                }
                 return
             }
             self._task = URLSession.shared.dataTask(with: request, completionHandler: { (data, reps, error) in
@@ -217,11 +251,12 @@ public final class SSBannerItem: UIImageView {
                 }
                 DispatchQueue.main.async(execute: { [weak self]() -> Void in
                     guard let sself = self else { return }
+                    sself.contentMode = sself.imageContentMode
                     UIView.transition(
                         with: sself,
                         duration: 0.1,
                         options: .transitionCrossDissolve,
-                        animations: { [weak self] in self?.image = img },
+                        animations: { sself.image = img },
                         completion: nil
                     )
                 })

@@ -63,10 +63,6 @@ extension ImageLooperViewController: UITableViewDataSource, UITableViewDelegate 
 	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
 		let cell = tableView.dequeueReusableCell(withIdentifier: ImageLoopCell.idf) as? ImageLoopCell
 		cell?.configure(list: images[indexPath.row])
-        let time = DispatchTime.now() + .seconds(2)
-        DispatchQueue.main.asyncAfter(deadline: time, execute: {
-            cell?.configure(list: self.images[indexPath.row])
-        })
 		return cell!
 	}
     
@@ -83,6 +79,9 @@ private class ImageLoopCell: UITableViewCell {
 	override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
 		super.init(style: .default, reuseIdentifier: ImageLoopCell.idf)
 		manager = SSAdBannerManager()
+        manager.backgroundColor = UIColor.orange
+        manager.placeHolderImage = #imageLiteral(resourceName: "placeholder")
+        manager.placeHolderMode = .center
 		contentView.addSubview(manager.view)
         manager.indicatorLocationPercantage = {[weak self]
             p in
