@@ -75,7 +75,6 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 
 	fileprivate var _direction: UIPageViewControllerNavigationOrientation!
 	fileprivate var _task: SSCancelableTask?
-	fileprivate var _scrollTask: SSCancelableTask?
 
 	fileprivate var _isHorizontal: Bool { return _direction == .horizontal }
 	fileprivate var _displayView: UIView! { return _display.ss_content }
@@ -203,7 +202,6 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 
 	fileprivate func dealScroll(_ scrollView: UIScrollView) {
 		SSCancelableTaskManager.cancel(_task)
-		SSCancelableTaskManager.cancel(_scrollTask)
         let offset = scrollView.contentOffset
         let standarValue = _isHorizontal ? offset.x : offset.y
         currentOffset?(standarValue)
@@ -214,7 +212,7 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 		if displayPoint - standarValue > 0 {
 			let targetBackupPoint = displayPoint - displayLen
 			if let preId = _display.ss_previousId {
-				if _backup.ss_identifer != preId {
+				if _backup.ss_identifer != preId || _backup.ss_identifer == "" {
 					ss_delegate?.pageView(self, configureForView: _backup, beforeView: _display)
 				}
 				if backupPoint != targetBackupPoint {
@@ -245,7 +243,7 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 		} else {
 			let targetBackupPoint = displayPoint + displayLen
 			if let nextId = _display.ss_nextId {
-				if _backup.ss_identifer != nextId {
+				if _backup.ss_identifer != nextId || _backup.ss_identifer == "" {
 					ss_delegate?.pageView(self, configureForView: _backup, afterView: _display)
 				}
 

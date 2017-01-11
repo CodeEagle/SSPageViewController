@@ -150,18 +150,18 @@ public final class SSAdBannerManager: NSObject {
 				self?.didTapBannerHandler?(index)
 			}
 			if list.count <= indicatorIndex { return }
-			let item = sself.itemAfter(indicatorIndex + 1)
+            let item = sself.getItem(id: indicatorIndex + 1)
 			display.configure(item)
 			display.tapBlock = handler
 			if list.count <= indicatorIndex + 1 { return }
-			let item2 = sself.itemAfter(indicatorIndex + 2)
+            let item2 = sself.getItem(id: indicatorIndex + 2)
 			backup.configure(item2)
 			backup.tapBlock = handler
 		}
 		_pageController.loopInterval = canScoll ? (loop ? 5 : 0) : 0
 	}
 
-	public func itemAfter(_ id: Int, after: Bool = false) -> (String?, Int?, Int?, Int?) {
+	public func getItem(after: Bool = false, id: Int) -> (String?, Int?, Int?, Int?) {
 		if id < 0 { return (nil, nil, nil, nil) }
 		let count = _map.count
 		var nextId: Int? = nil
@@ -189,13 +189,15 @@ public final class SSAdBannerManager: NSObject {
 extension SSAdBannerManager: SSPageViewDelegate {
 
 	public func pageView(_ pageView: SSPageViewController<Template, SSAdBannerManager>, configureForView view: Template, beforeView: Template) {
+        view.identifer = nil
 		guard let value = Int(beforeView.ss_identifer) else { return }
-		view.configure(itemAfter(value))
+        view.configure(getItem(id: value))
 	}
 
 	public func pageView(_ pageView: SSPageViewController<Template, SSAdBannerManager>, configureForView view: Template, afterView: Template) {
+        view.identifer = nil
 		guard let value = Int(afterView.ss_identifer) else { return }
-		view.configure(itemAfter(value, after: true))
+		view.configure(getItem(after: true, id: value))
 	}
 
 	public func pageView(_ pageView: SSPageViewController<Template, SSAdBannerManager>, didScrollToView view: Template) {
