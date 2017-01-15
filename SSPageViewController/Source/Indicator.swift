@@ -76,6 +76,7 @@ public final class PageIndicator: UIView {
             let delta = f.minX
             backUpX =  frame.width + delta
         }
+        if f.origin.x.isNaN || f.origin.y.isNaN { return }
         indicator.frame = f
         f = _indicatorBackup.frame
         f.origin.x = backUpX
