@@ -107,6 +107,7 @@ public final class SSPageViewController < Template: SSPageViewContentProtocol, D
 	}
 
 	fileprivate var _ignoreScroll = false
+    
 	public func scrollTo(_ template: (Template) -> Template, direction: UIPageViewControllerNavigationDirection) {
 		_backup = template(_backup)
 		_ignoreScroll = true
@@ -399,6 +400,8 @@ private extension SSPageViewController {
 		scrollView.isPagingEnabled = true
 		scrollView.delegate = self
 	}
+    
+    
 
 	func initializeSegment() {
 		view.addSubview(segment)

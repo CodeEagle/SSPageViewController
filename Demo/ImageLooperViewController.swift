@@ -69,7 +69,7 @@ extension ImageLooperViewController: UITableViewDataSource, UITableViewDelegate 
     
 }
 
-private class ImageLoopCell: UITableViewCell {
+class ImageLoopCell: UITableViewCell {
 
 	static let idf = "cell"
 
@@ -79,7 +79,7 @@ private class ImageLoopCell: UITableViewCell {
 	override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
 		super.init(style: .default, reuseIdentifier: ImageLoopCell.idf)
 		manager = SSAdBannerManager()
-        manager.backgroundColor = UIColor.orange
+//        manager.backgroundColor = UIColor.orange
         manager.placeHolderImage = #imageLiteral(resourceName: "placeholder")
         manager.placeHolderMode = .center
 		contentView.addSubview(manager.view)
